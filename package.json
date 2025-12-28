@@ -1,0 +1,23 @@
+{
+  "name": "book-store",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --watch index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/prince-musonda/book-store.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/prince-musonda/book-store/issues"
+  },
+  "homepage": "https://github.com/prince-musonda/book-store#readme",
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}
