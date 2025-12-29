@@ -1,9 +1,0 @@
-services:
-  postgres:
-    image: postgres:17.4
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_DB: book-store
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 1billion_bond
