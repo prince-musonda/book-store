@@ -1,59 +1,49 @@
-const { booksDatabase } = require("../models/books");
+const booksTable = require("../models/book.model");
+const db = require("../db/index");
+const { eq } = require("drizzle-orm");
 
-exports.getAllBooks = (req, res) => {
-  res.json(booksDatabase);
+exports.getAllBooks = async (req, res) => {
+  const allbooks = await db.select().from(booksTable);
+  res.json(allbooks);
 };
 
-exports.getBookById = (req, res) => {
-  const id = parseInt(req.params.id);
-  if (isNaN(id)) {
-    res.status(400);
-    return res.json({ error: "Bad request. ID must be number" });
-  }
-  const book = booksDatabase.find((book) => book.id == id);
+exports.getBookById = async (req, res) => {
+  const id = req.params.id;
+  const [book] = await db
+    .select()
+    .from(booksTable)
+    .where((book) => eq(book.id, id));
   console.log(book);
   if (!book) {
     return res.status(404).json({ error: `book with id ${id} not found` });
   }
+  return res.json(book);
 };
 
-exports.addNewBook = (req, res) => {
-  const { title, author } = req.body;
+exports.addNewBook = async (req, res) => {
+  const { title, description, authorId } = req.body;
+  console.log(req.body);
   //   input validation
-  if (!title || author === "") {
+  if (!title || title === "") {
     return res.status(400).json({ error: "title is required" });
   }
-  if (!author || author === "") {
-    return res.status(400).json({ error: "author name is required" });
-  }
-  // add book
-  const book = { id: booksDatabase.length + 1, title, author };
-  booksDatabase.push(book);
+
+  const result = await db
+    .insert(booksTable)
+    .values({
+      title,
+      authorId,
+      description,
+    })
+    .returning({ id: booksTable.id });
+
   return res
     .status(200)
-    .json({ message: "book created successfully", ...book });
+    .json({ message: "book created successfully", id: result.id });
 };
 
-exports.deleteBookById = (req, res) => {
-  const bookId = parseInt(req.params.id);
-  if (isNaN(bookId)) {
-    return res
-      .status(400)
-      .json({ error: "Bad request. Book Id must be number" });
-  }
-  //find index of book from the in memory database
-  const bookIndex = booksDatabase.findIndex((book) => book.id == bookId);
-  if (bookIndex >= 0) {
-    // remove book from database if book is found
-    const removedBook = booksDatabase.splice(bookIndex, 1);
-    return res.status(201).json({
-      message: `successfully deleted`,
-      book: removedBook,
-    });
-  } else {
-    // return error message if book not found
-    return res
-      .status(404)
-      .json({ error: `the book with id ${bookId} does not exist` });
-  }
+exports.deleteBookById = async (req, res) => {
+  const bookId = req.params.id;
+  await db.delete(booksTable).where((book) => eq(book.id, bookId));
+  res.json({ success: "done" });
 };

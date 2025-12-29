@@ -1,6 +1,7 @@
 const express = require("express");
 const booksRouter = require("./routes/books.route");
 const loggerMidleware = require("./middleware/loggerMidleware");
+require("dotenv/config");
 
 // express app initialization
 const app = express();
