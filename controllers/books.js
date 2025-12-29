@@ -1,8 +1,16 @@
 const booksTable = require("../models/book.model");
 const db = require("../db/index");
-const { eq } = require("drizzle-orm");
+const { eq, ilike } = require("drizzle-orm");
 
 exports.getAllBooks = async (req, res) => {
+  const search = req.query.search;
+  if (search) {
+    const books = await db
+      .select()
+      .from(booksTable)
+      .where((book) => ilike(book.title, `%${search}%`));
+    return res.json(books);
+  }
   const allbooks = await db.select().from(booksTable);
   res.json(allbooks);
 };
